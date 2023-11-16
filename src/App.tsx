@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import '@radix-ui/themes/styles.css';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import { Slider } from '@radix-ui/themes';
@@ -7,30 +7,56 @@ import deepEqual from 'deep-equal';
 import './App.css'
 import { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types/types';
 
+
 function App() {
   const excalidrawAPI = useRef<ExcalidrawImperativeAPI>();
   const versionsRef = useRef<OpId[][]>([]);
   const [maxVersion, setMaxVersion] = useState(-1);
   const [docSize, setDocSize] = useState(0);
   const [vv, setVV] = useState("")
+  const channel = useMemo(() => {
+    return new BroadcastChannel("temp");
+  }, []);
+  useEffect(() => {
+    return () => {
+      channel.close();
+    }
+  }, [channel]);
 
   const { doc, docElements } = useMemo(() => {
     const doc = new Loro();
-    doc.setPeerId(0n);
     const docElements = doc.getList("elements");
+    let lastVersion: Uint8Array | undefined = undefined;
+    channel.onmessage = e => {
+      console.log("Event");
+      const bytes = new Uint8Array(e.data);
+      doc.import(bytes);
+    };
     doc.subscribe((e) => {
-      setVV(JSON.stringify(Object.fromEntries(toReadableVersion(doc.version()))));
+      const version = Object.fromEntries(toReadableVersion(doc.version()));
+      let vv = ""
+      for (const [k, v] of Object.entries(version)) {
+        vv += `${k.toString().slice(0, 4)}:${v} `
+      }
+
+      setVV(vv);
+      if (e.local) {
+        const bytes = doc.exportFrom(lastVersion);
+        lastVersion = doc.version();
+        channel.postMessage(bytes);
+      }
       if (!e.fromCheckout) {
         versionsRef.current.push(doc.frontiers())
         setMaxVersion(versionsRef.current.length - 1);
         setVersionNum(versionsRef.current.length - 1)
         setDocSize(doc.exportFrom().length);
-      } else {
+      }
+      if (e.fromCheckout || !e.local) {
         excalidrawAPI.current?.updateScene({ elements: docElements.getDeepValue() })
       }
     });
     return { doc, docElements }
-  }, []);
+  }, [channel]);
 
   const [versionNum, setVersionNum] = useState(-1);
   const lastVersion = useRef(-1);
@@ -57,7 +83,7 @@ function App() {
         />
       </div>
       <div style={{ margin: "1em 2em" }}>
-        <div>
+        <div style={{ fontSize: "0.8em" }}>
           Version Vector {vv}, Doc Size {docSize} bytes
         </div>
         <Slider value={[versionNum]} max={maxVersion} onValueChange={(v) => {
