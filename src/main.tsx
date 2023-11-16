@@ -2,7 +2,6 @@
 (globalThis as any).process = { env: { NODE_ENV: 'development' } };
 
 import { Theme } from '@radix-ui/themes';
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
