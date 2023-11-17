@@ -25,6 +25,7 @@ function App() {
 
   const { doc, docElements } = useMemo(() => {
     const doc = new Loro();
+    const data = localStorage.getItem("store");
     const docElements = doc.getList("elements");
     let lastVersion: Uint8Array | undefined = undefined;
     channel.onmessage = e => {
@@ -49,12 +50,23 @@ function App() {
         versionsRef.current.push(doc.frontiers())
         setMaxVersion(versionsRef.current.length - 1);
         setVersionNum(versionsRef.current.length - 1)
-        setDocSize(doc.exportFrom().length);
+        const data = doc.exportFrom();
+        localStorage.setItem("store", btoa(String.fromCharCode(...data)));
+        setDocSize(data.length);
       }
       if (e.fromCheckout || !e.local) {
         excalidrawAPI.current?.updateScene({ elements: docElements.getDeepValue() })
       }
     });
+    setTimeout(() => {
+      if (data && data?.length > 0) {
+        const bytes = new Uint8Array(atob(data).split("").map(function (c) { return c.charCodeAt(0) }));
+        doc.checkoutToLatest();
+        doc.import(bytes);
+        setMaxVersion(versionsRef.current.length - 1);
+        setVersionNum(versionsRef.current.length - 1)
+      }
+    }, 100);
     return { doc, docElements }
   }, [channel]);
 
@@ -84,7 +96,10 @@ function App() {
       </div>
       <div style={{ margin: "1em 2em" }}>
         <div style={{ fontSize: "0.8em" }}>
-          Version Vector {vv}, Doc Size {docSize} bytes
+          <button onClick={() => {
+            localStorage.clear();
+            location.reload();
+          }}>Clear</button> Version Vector {vv}, Doc Size {docSize} bytes
         </div>
         <Slider value={[versionNum]} max={maxVersion} onValueChange={(v) => {
           setVersionNum(v[0]);
