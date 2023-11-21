@@ -1,6 +1,6 @@
 # Loro Excalidraw Example
 
-
+- This demo serves as a proof of concept for the Loro Excalidraw integration. It's not optimized for production use.
 - Play online at https://loro-excalidraw.vercel.app/
 - This demo simulates syncing via BroadcastChannel. You can open several tabs to simulate multiplayer. 
   - Currently, if you open a new tab after editing, the new tab won't get the old updates from the others
