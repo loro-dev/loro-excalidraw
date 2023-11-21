@@ -7,6 +7,37 @@ import deepEqual from 'deep-equal';
 import './App.css'
 import { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types/types';
 
+function opIdToString(id: OpId): string {
+  return `${id.counter}@${id.peer.toString()}`
+}
+
+function frontierToString(frontier: OpId[]): string {
+  return frontier.map(opIdToString).join(",")
+}
+
+function frontiersToString(frontiers: OpId[][]): string {
+  return frontiers.map(frontierToString).join(";");
+}
+
+function stringToOpId(str: string): OpId {
+  const [counter, peer] = str.split("@");
+  return {
+    counter: parseInt(counter),
+    peer: BigInt(peer)
+  }
+}
+
+function stringToFrontier(str: string): OpId[] {
+  return str.split(",").map(stringToOpId);
+}
+
+function stringToFrontiers(str: string): OpId[][] {
+  if (str === "") {
+    return [];
+  }
+
+  return str.split(";").map(stringToFrontier);
+}
 
 function App() {
   const excalidrawAPI = useRef<ExcalidrawImperativeAPI>();
@@ -22,10 +53,18 @@ function App() {
       channel.close();
     }
   }, [channel]);
+  const [versionNum, setVersionNum] = useState(-1);
 
   const { doc, docElements } = useMemo(() => {
     const doc = new Loro();
     const data = localStorage.getItem("store");
+    setTimeout(() => {
+      const versions = localStorage.getItem("frontiers");
+      versionsRef.current = stringToFrontiers(versions || "");
+      setMaxVersion(versionsRef.current.length - 1);
+      setVersionNum(versionsRef.current.length - 1)
+    });
+
     const docElements = doc.getList("elements");
     let lastVersion: Uint8Array | undefined = undefined;
     channel.onmessage = e => {
@@ -52,6 +91,7 @@ function App() {
         setVersionNum(versionsRef.current.length - 1)
         const data = doc.exportFrom();
         localStorage.setItem("store", btoa(String.fromCharCode(...data)));
+        localStorage.setItem("frontiers", frontiersToString(versionsRef.current));
         setDocSize(data.length);
       }
       if (e.fromCheckout || !e.local) {
@@ -70,7 +110,6 @@ function App() {
     return { doc, docElements }
   }, [channel]);
 
-  const [versionNum, setVersionNum] = useState(-1);
   const lastVersion = useRef(-1);
   return (
     <div >
@@ -101,7 +140,7 @@ function App() {
             location.reload();
           }}>Clear</button> Version Vector {vv}, Doc Size {docSize} bytes
         </div>
-        <Slider value={[versionNum]} max={maxVersion} onValueChange={(v) => {
+        <Slider value={[versionNum]} min={-1} max={maxVersion} onValueChange={(v) => {
           setVersionNum(v[0]);
           if (v[0] === -1) {
             doc.checkout([]);
