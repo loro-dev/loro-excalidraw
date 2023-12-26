@@ -11,12 +11,21 @@ dependencies:
   '@radix-ui/themes':
     specifier: ^2.0.1
     version: 2.0.1(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
+  '@types/pako':
+    specifier: ^2.0.3
+    version: 2.0.3
   deep-equal:
     specifier: ^2.2.3
     version: 2.2.3
   loro-crdt:
-    specifier: ^0.4.3
-    version: 0.4.3
+    specifier: 0.7.2-alpha.1
+    version: 0.7.2-alpha.1
+  loro-wasm:
+    specifier: 0.7.2-alpha.1
+    version: 0.7.2-alpha.1
+  pako:
+    specifier: ^2.1.0
+    version: 2.1.0
   react:
     specifier: ^18.2.0
     version: registry.npmmirror.com/react@18.2.0
@@ -1482,6 +1491,10 @@ packages:
     resolution: {integrity: sha512-tqdiS4otQP4KmY0PR3u6KbZ5EWvhNdUoS/jc93UuK23C220lOZ/9TvjfxdPcKvqwwDVtmtSCrnr0p/2dirAxkA==}
     dev: true
 
+  /@types/pako@2.0.3:
+    resolution: {integrity: sha512-bq0hMV9opAcrmE0Byyo0fY3Ew4tgOevJmQ9grUhpXQhYfyLJ1Kqg3P33JT5fdbT2AjeAjR51zqqVjAL/HMkx7Q==}
+    dev: false
+
   /aria-hidden@1.2.3:
     resolution: {integrity: sha512-xcLxITLe2HYa1cnYnwCjkOO1PqUHQpozB8x9AR0OgWN2woOBi5kSDVxKfd0b7sb1hw5qFeJhXm9H1nu3xSfLeQ==}
     engines: {node: '>=10'}
@@ -1782,14 +1795,14 @@ packages:
       js-tokens: 4.0.0
     dev: false
 
-  /loro-crdt@0.4.3:
-    resolution: {integrity: sha512-ofUEXrieS2py9t0Ee+7ebgCCRwbiQthP9SuQ/J1AmUsOQl2+2feYqPlTYFKdP1BvAnus1SCNLNng4jRJlv/ydg==}
+  /loro-crdt@0.7.2-alpha.1:
+    resolution: {integrity: sha512-roOkmYxMLdAnCtBlZ8s6lLqzYWuU5PuwpaQ+v3J9KrPcvhARKY3JZNtfNmDsmId6wUF+yCtvX8zzd867Ufnr6w==}
     dependencies:
-      loro-wasm: 0.4.3
+      loro-wasm: 0.7.2-alpha.1
     dev: false
 
-  /loro-wasm@0.4.3:
-    resolution: {integrity: sha512-k9Nr2wlRCX59ar4o0CU840vabeB+NOEkkrGG02hWsT2MaLGJ5IeKrAK22DpMrdhDgX1F4L8A6L+cL6vDlpirRA==}
+  /loro-wasm@0.7.2-alpha.1:
+    resolution: {integrity: sha512-yFAjau/x48wdhsIjGnMetesgdXMlHeGh8hezc/0uNzl815cGXrxuBB0yolOQUXSCWtndZSa0hgCV+lChRiCDQA==}
     dev: false
 
   /object-inspect@1.13.1:
@@ -1817,6 +1830,16 @@ packages:
       define-properties: 1.2.1
       has-symbols: 1.0.3
       object-keys: 1.1.1
+    dev: false
+
+  /once@1.4.0:
+    resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
+    dependencies:
+      wrappy: registry.npmmirror.com/wrappy@1.0.2
+    dev: true
+
+  /pako@2.1.0:
+    resolution: {integrity: sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==}
     dev: false
 
   /react-remove-scroll-bar@2.3.4(@types/react@18.2.15)(react@18.2.0):
@@ -3246,7 +3269,7 @@ packages:
       inflight: registry.npmmirror.com/inflight@1.0.6
       inherits: registry.npmmirror.com/inherits@2.0.4
       minimatch: registry.npmmirror.com/minimatch@3.1.2
-      once: registry.npmmirror.com/once@1.4.0
+      once: 1.4.0
       path-is-absolute: registry.npmmirror.com/path-is-absolute@1.0.1
     dev: true
 
@@ -3335,7 +3358,7 @@ packages:
     name: inflight
     version: 1.0.6
     dependencies:
-      once: registry.npmmirror.com/once@1.4.0
+      once: 1.4.0
       wrappy: registry.npmmirror.com/wrappy@1.0.2
     dev: true
 
@@ -3543,14 +3566,6 @@ packages:
     resolution: {integrity: sha512-uYr7J37ae/ORWdZeQ1xxMJe3NtdmqMC/JZK+geofDrkLUApKRHPd18/TxtBOJ4A0/+uUIliorNrfYV6s1b02eQ==, registry: https://registry.npmjs.org/, tarball: https://registry.npmmirror.com/node-releases/-/node-releases-2.0.13.tgz}
     name: node-releases
     version: 2.0.13
-    dev: true
-
-  registry.npmmirror.com/once@1.4.0:
-    resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==, registry: https://registry.npmjs.org/, tarball: https://registry.npmmirror.com/once/-/once-1.4.0.tgz}
-    name: once
-    version: 1.4.0
-    dependencies:
-      wrappy: registry.npmmirror.com/wrappy@1.0.2
     dev: true
 
   registry.npmmirror.com/optionator@0.9.3:

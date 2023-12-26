@@ -6,6 +6,13 @@ import { Loro, LoroList, LoroMap, OpId, toReadableVersion } from 'loro-crdt';
 import deepEqual from 'deep-equal';
 import './App.css'
 import { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types/types';
+import pako from "pako";
+
+declare module 'loro-wasm' {
+  interface Loro {
+    exportFromV0(bytes?: Uint8Array): Uint8Array;
+  }
+}
 
 function opIdToString(id: OpId): string {
   return `${id.counter}@${id.peer.toString()}`
@@ -42,8 +49,19 @@ function stringToFrontiers(str: string): OpId[][] {
 function App() {
   const excalidrawAPI = useRef<ExcalidrawImperativeAPI>();
   const versionsRef = useRef<OpId[][]>([]);
+  const [docSize, setDocSize] = useState({
+    oldUpdates: 0,
+    newUpdates: 0,
+    oldSnapshot: 0,
+    newSnapshot: 0
+  });
+  const [compressedDocSize, setCompressedDocSize] = useState({
+    oldUpdates: 0,
+    newUpdates: 0,
+    oldSnapshot: 0,
+    newSnapshot: 0
+  });
   const [maxVersion, setMaxVersion] = useState(-1);
-  const [docSize, setDocSize] = useState(0);
   const [vv, setVV] = useState("")
   const channel = useMemo(() => {
     return new BroadcastChannel("temp");
@@ -92,10 +110,24 @@ function App() {
         const data = doc.exportFrom();
         localStorage.setItem("store", btoa(String.fromCharCode(...data)));
         localStorage.setItem("frontiers", frontiersToString(versionsRef.current));
-        setDocSize(data.length);
+        const newSnapshot = doc.exportSnapshot();
+        const oldSnapshot = doc.exportSnapshotV0();
+        const oldUpdates = doc.exportFromV0();
+        setDocSize({
+          newUpdates: data.length,
+          newSnapshot: newSnapshot.length,
+          oldSnapshot: oldSnapshot.length,
+          oldUpdates: oldUpdates.length
+        });
+        setCompressedDocSize({
+          newUpdates: getCompressedSize(data),
+          newSnapshot: getCompressedSize(newSnapshot),
+          oldSnapshot: getCompressedSize(oldSnapshot),
+          oldUpdates: getCompressedSize(oldUpdates)
+        })
       }
       if (e.fromCheckout || !e.local) {
-        excalidrawAPI.current?.updateScene({ elements: docElements.getDeepValue() })
+        excalidrawAPI.current?.updateScene({ elements: docElements.toJson() })
       }
     });
     setTimeout(() => {
@@ -133,12 +165,28 @@ function App() {
           }}
         />
       </div>
-      <div style={{ margin: "1em 2em" }}>
-        <div style={{ fontSize: "0.8em" }}>
-          <button onClick={() => {
-            localStorage.clear();
-            location.reload();
-          }}>Clear</button> Version Vector {vv}, Doc Size {docSize} bytes
+      <div style={{ margin: "1em 2em", zIndex: 7 }}>
+        <div style={{ fontSize: "0.8em", width: "100%", display: "flex", flexDirection: "row", position: "relative", justifyContent: "flex-start" }}>
+          <div>
+            <button onClick={() => {
+              localStorage.clear();
+              location.reload();
+            }}>Clear</button> Version Vector {vv}
+          </div>
+          <div style={{ position: "absolute", right: 16, bottom: 0, zIndex: 7 }}>
+            <p>
+              New updates size {docSize.newUpdates} bytes {compressedDocSize.newUpdates}
+            </p>
+            <p>
+              Old updates size {docSize.oldUpdates} bytes {compressedDocSize.oldUpdates}
+            </p>
+            <p>
+              New snapshot size {docSize.newSnapshot} bytes {compressedDocSize.newSnapshot}
+            </p>
+            <p>
+              Old snapshot size {docSize.oldSnapshot} bytes {compressedDocSize.oldSnapshot}
+            </p>
+          </div>
         </div>
         <Slider value={[versionNum]} min={-1} max={maxVersion} onValueChange={(v) => {
           setVersionNum(v[0]);
@@ -155,6 +203,14 @@ function App() {
       </div>
     </div>
   )
+}
+
+function getCompressedSize(data: Uint8Array): number {
+  try {
+    return pako.deflateRaw(data).length
+  } catch (e) {
+    return 0
+  }
 }
 
 function recordLocalOps(loroList: LoroList, elements: readonly { version: number }[]): boolean {
