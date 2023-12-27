@@ -18,11 +18,11 @@ dependencies:
     specifier: ^2.2.3
     version: 2.2.3
   loro-crdt:
-    specifier: 0.7.2-alpha.1
-    version: 0.7.2-alpha.1
+    specifier: 0.7.2-alpha.3
+    version: 0.7.2-alpha.3
   loro-wasm:
-    specifier: 0.7.2-alpha.1
-    version: 0.7.2-alpha.1
+    specifier: 0.7.2-alpha.3
+    version: 0.7.2-alpha.3
   pako:
     specifier: ^2.1.0
     version: 2.1.0
@@ -1795,14 +1795,14 @@ packages:
       js-tokens: 4.0.0
     dev: false
 
-  /loro-crdt@0.7.2-alpha.1:
-    resolution: {integrity: sha512-roOkmYxMLdAnCtBlZ8s6lLqzYWuU5PuwpaQ+v3J9KrPcvhARKY3JZNtfNmDsmId6wUF+yCtvX8zzd867Ufnr6w==}
+  /loro-crdt@0.7.2-alpha.3:
+    resolution: {integrity: sha512-ug4xKXhALOTy42oMBTXvYt3dVBZwNLuN0f2JKQZ+x0FnNUrnBh7vlB4TrXQ3u1JAomQlPGSE8q35RJjTA91CXA==}
     dependencies:
-      loro-wasm: 0.7.2-alpha.1
+      loro-wasm: 0.7.2-alpha.3
     dev: false
 
-  /loro-wasm@0.7.2-alpha.1:
-    resolution: {integrity: sha512-yFAjau/x48wdhsIjGnMetesgdXMlHeGh8hezc/0uNzl815cGXrxuBB0yolOQUXSCWtndZSa0hgCV+lChRiCDQA==}
+  /loro-wasm@0.7.2-alpha.3:
+    resolution: {integrity: sha512-LMFlT4Hk0vlaiOcgkC0P0cX0NtG8OxWs2sKZni17Gvh8/7GcunxFja4BswZostFs3yBDJmCZKrEyVuPakFDRag==}
     dev: false
 
   /object-inspect@1.13.1:
