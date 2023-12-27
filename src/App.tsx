@@ -61,10 +61,6 @@ function App() {
     oldSnapshot: 0,
     newSnapshot: 0
   });
-  const [newCompressedDocSize, setNewCompressedDocSize] = useState({
-    updates: 0,
-    snapshot: 0
-  });
   const [maxVersion, setMaxVersion] = useState(-1);
   const [vv, setVV] = useState("")
   const channel = useMemo(() => {
@@ -129,10 +125,6 @@ function App() {
           oldSnapshot: getCompressedSize(oldSnapshot),
           oldUpdates: getCompressedSize(oldUpdates)
         })
-        setNewCompressedDocSize({
-          updates: doc.exportFromCompressed().length,
-          snapshot: doc.exportSnapshotCompressed().length
-        })
       }
       if (e.fromCheckout || !e.local) {
         excalidrawAPI.current?.updateScene({ elements: docElements.toJson() })
@@ -183,13 +175,13 @@ function App() {
           </div>
           <div style={{ position: "absolute", right: 16, bottom: 0, zIndex: 7 }}>
             <p>
-              New updates size {docSize.newUpdates} bytes {compressedDocSize.newUpdates}, {newCompressedDocSize.updates}
+              New updates size {docSize.newUpdates} bytes {compressedDocSize.newUpdates}
             </p>
             <p>
               Old updates size {docSize.oldUpdates} bytes {compressedDocSize.oldUpdates}
             </p>
             <p>
-              New snapshot size {docSize.newSnapshot} bytes {compressedDocSize.newSnapshot}, {newCompressedDocSize.snapshot}
+              New snapshot size {docSize.newSnapshot} bytes {compressedDocSize.newSnapshot}
             </p>
             <p>
               Old snapshot size {docSize.oldSnapshot} bytes {compressedDocSize.oldSnapshot}
