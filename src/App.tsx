@@ -88,7 +88,12 @@ function App() {
     channel.onmessage = e => {
       console.log("Event");
       const bytes = new Uint8Array(e.data);
-      doc.import(bytes);
+      try {
+        doc.import(bytes);
+      } catch (e) {
+        localStorage.clear();
+        location.reload();
+      }
     };
     doc.subscribe((e) => {
       const version = Object.fromEntries(toReadableVersion(doc.version()));
