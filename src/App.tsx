@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import '@radix-ui/themes/styles.css';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import { Slider } from '@radix-ui/themes';
-import { Loro, LoroList, LoroMap, OpId, toReadableVersion } from 'loro-crdt';
+import { Loro, LoroList, LoroMap, OpId, VersionVector } from 'loro-crdt';
 import deepEqual from 'deep-equal';
 import './App.css'
 import { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types/types';
@@ -30,7 +30,7 @@ function stringToOpId(str: string): OpId {
   const [counter, peer] = str.split("@");
   return {
     counter: parseInt(counter),
-    peer: BigInt(peer)
+    peer: peer as `${number}`
   }
 }
 
@@ -84,7 +84,7 @@ function App() {
     });
 
     const docElements = doc.getList("elements");
-    let lastVersion: Uint8Array | undefined = undefined;
+    let lastVersion: VersionVector | undefined = undefined;
     channel.onmessage = e => {
       console.log("Event");
       const bytes = new Uint8Array(e.data);
@@ -96,19 +96,19 @@ function App() {
       }
     };
     doc.subscribe((e) => {
-      const version = Object.fromEntries(toReadableVersion(doc.version()));
+      const version = Object.fromEntries(doc.version().toJSON());
       let vv = ""
       for (const [k, v] of Object.entries(version)) {
         vv += `${k.toString().slice(0, 4)}:${v} `
       }
 
       setVV(vv);
-      if (e.local) {
+      if (e.by === "local") {
         const bytes = doc.exportFrom(lastVersion);
         lastVersion = doc.version();
         channel.postMessage(bytes);
       }
-      if (!e.fromCheckout) {
+      if (e.by !== "checkout") {
         versionsRef.current.push(doc.frontiers())
         setMaxVersion(versionsRef.current.length - 1);
         setVersionNum(versionsRef.current.length - 1)
@@ -116,8 +116,8 @@ function App() {
         localStorage.setItem("store", btoa(String.fromCharCode(...data)));
         localStorage.setItem("frontiers", frontiersToString(versionsRef.current));
         const newSnapshot = doc.exportSnapshot();
-        const oldSnapshot = doc.exportSnapshotV0();
-        const oldUpdates = doc.exportFromV0();
+        const oldSnapshot = doc.exportSnapshot();
+        const oldUpdates = doc.exportFrom();
         setDocSize({
           newUpdates: data.length,
           newSnapshot: newSnapshot.length,
@@ -131,8 +131,8 @@ function App() {
           oldUpdates: getCompressedSize(oldUpdates)
         })
       }
-      if (e.fromCheckout || !e.local) {
-        excalidrawAPI.current?.updateScene({ elements: docElements.toJson() })
+      if (e.by !== "local") {
+        excalidrawAPI.current?.updateScene({ elements: docElements.toJSON() })
       }
     });
     setTimeout(() => {
@@ -221,7 +221,7 @@ function getCompressedSize(data: Uint8Array): number {
 function recordLocalOps(loroList: LoroList, elements: readonly { version: number }[]): boolean {
   let changed = false;
   for (let i = loroList.length; i < elements.length; i++) {
-    loroList.insertContainer(i, "Map");
+    loroList.insertContainer(i, new LoroMap());
     changed = true;
   }
 

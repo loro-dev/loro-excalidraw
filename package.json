@@ -14,8 +14,8 @@
     "@radix-ui/themes": "^2.0.1",
     "@types/pako": "^2.0.3",
     "deep-equal": "^2.2.3",
-    "loro-crdt": "0.7.2-alpha.4",
-    "loro-wasm": "0.7.2-alpha.4",
+    "loro-crdt": "0.16.3",
+    "loro-wasm": "0.16.3",
     "pako": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
