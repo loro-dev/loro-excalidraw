@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import '@radix-ui/themes/styles.css';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import { Slider } from '@radix-ui/themes';
-import { Loro, LoroList, LoroMap, OpId, VersionVector } from 'loro-crdt';
+import { LoroDoc, LoroList, LoroMap, OpId, VersionVector } from 'loro-crdt';
 import deepEqual from 'deep-equal';
 import './App.css'
 import { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types/types';
@@ -74,7 +74,7 @@ function App() {
   const [versionNum, setVersionNum] = useState(-1);
 
   const { doc, docElements } = useMemo(() => {
-    const doc = new Loro();
+    const doc = new LoroDoc();
     const data = localStorage.getItem("store");
     setTimeout(() => {
       const versions = localStorage.getItem("frontiers");
@@ -104,7 +104,7 @@ function App() {
 
       setVV(vv);
       if (e.by === "local") {
-        const bytes = doc.exportFrom(lastVersion);
+        const bytes = doc.export({mode: 'update', from: lastVersion});
         lastVersion = doc.version();
         channel.postMessage(bytes);
       }
