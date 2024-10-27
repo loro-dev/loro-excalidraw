@@ -115,9 +115,18 @@ function App() {
         const data = doc.export({mode: 'update'});
         localStorage.setItem("store", btoa(String.fromCharCode(...data)));
         localStorage.setItem("frontiers", frontiersToString(versionsRef.current));
-        const newSnapshot = doc.exportSnapshot();
-        const oldSnapshot = doc.exportSnapshot();
-        const oldUpdates = doc.exportFrom();
+        const newSnapshot = doc.export({
+          mode: 'shallow-snapshot',
+          frontiers: doc.frontiers(),
+        });
+        const oldSnapshot = doc.export({
+          mode: 'shallow-snapshot',
+          frontiers: doc.frontiers(),
+        });
+        const oldUpdates = doc.export({
+          mode: 'shallow-snapshot',
+          frontiers: doc.frontiers(),
+        });
         setDocSize({
           newUpdates: data.length,
           newSnapshot: newSnapshot.length,
