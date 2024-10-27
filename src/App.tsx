@@ -8,11 +8,6 @@ import './App.css'
 import { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types/types';
 import pako from "pako";
 
-declare module 'loro-wasm' {
-  interface Loro {
-    exportFromV0(bytes?: Uint8Array): Uint8Array;
-  }
-}
 
 function opIdToString(id: OpId): string {
   return `${id.counter}@${id.peer.toString()}`
