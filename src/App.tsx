@@ -112,7 +112,7 @@ function App() {
         versionsRef.current.push(doc.frontiers())
         setMaxVersion(versionsRef.current.length - 1);
         setVersionNum(versionsRef.current.length - 1)
-        const data = doc.exportFrom();
+        const data = doc.export({mode: 'update'});
         localStorage.setItem("store", btoa(String.fromCharCode(...data)));
         localStorage.setItem("frontiers", frontiersToString(versionsRef.current));
         const newSnapshot = doc.exportSnapshot();
