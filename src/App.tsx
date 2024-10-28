@@ -2,17 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import '@radix-ui/themes/styles.css';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import { Slider } from '@radix-ui/themes';
-import { Loro, LoroList, LoroMap, OpId, VersionVector } from 'loro-crdt';
+import { LoroDoc, LoroList, LoroMap, OpId, VersionVector } from 'loro-crdt';
 import deepEqual from 'deep-equal';
 import './App.css'
 import { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types/types';
 import pako from "pako";
 
-declare module 'loro-wasm' {
-  interface Loro {
-    exportFromV0(bytes?: Uint8Array): Uint8Array;
-  }
-}
 
 function opIdToString(id: OpId): string {
   return `${id.counter}@${id.peer.toString()}`
@@ -74,7 +69,7 @@ function App() {
   const [versionNum, setVersionNum] = useState(-1);
 
   const { doc, docElements } = useMemo(() => {
-    const doc = new Loro();
+    const doc = new LoroDoc();
     const data = localStorage.getItem("store");
     setTimeout(() => {
       const versions = localStorage.getItem("frontiers");
@@ -104,7 +99,7 @@ function App() {
 
       setVV(vv);
       if (e.by === "local") {
-        const bytes = doc.exportFrom(lastVersion);
+        const bytes = doc.export({mode: 'update', from: lastVersion});
         lastVersion = doc.version();
         channel.postMessage(bytes);
       }
@@ -112,12 +107,21 @@ function App() {
         versionsRef.current.push(doc.frontiers())
         setMaxVersion(versionsRef.current.length - 1);
         setVersionNum(versionsRef.current.length - 1)
-        const data = doc.exportFrom();
+        const data = doc.export({mode: 'update'});
         localStorage.setItem("store", btoa(String.fromCharCode(...data)));
         localStorage.setItem("frontiers", frontiersToString(versionsRef.current));
-        const newSnapshot = doc.exportSnapshot();
-        const oldSnapshot = doc.exportSnapshot();
-        const oldUpdates = doc.exportFrom();
+        const newSnapshot = doc.export({
+          mode: 'shallow-snapshot',
+          frontiers: doc.frontiers(),
+        });
+        const oldSnapshot = doc.export({
+          mode: 'shallow-snapshot',
+          frontiers: doc.frontiers(),
+        });
+        const oldUpdates = doc.export({
+          mode: 'shallow-snapshot',
+          frontiers: doc.frontiers(),
+        });
         setDocSize({
           newUpdates: data.length,
           newSnapshot: newSnapshot.length,
