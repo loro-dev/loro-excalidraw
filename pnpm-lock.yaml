@@ -21,11 +21,8 @@ importers:
         specifier: ^2.2.3
         version: 2.2.3
       loro-crdt:
-        specifier: ^1.0.7
-        version: 1.0.7
-      loro-wasm:
-        specifier: 0.16.3
-        version: 0.16.3
+        specifier: '=1.0.8-alpha.3'
+        version: 1.0.8-alpha.3
       pako:
         specifier: ^2.1.0
         version: 2.1.0
@@ -1688,14 +1685,8 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
 
-  loro-crdt@1.0.7:
-    resolution: {integrity: sha512-BD9qx3dQdqhEegOTEYdYo2GvRoYAeZFAfwcJLDtNRKo20y/1dUsRmzAvtLzZI/cdcRg+DkpBBLr+wcL4jRYUNw==}
-
-  loro-wasm@0.16.3:
-    resolution: {integrity: sha512-ftJnoAVImVGCxwDWkgOU00tWAunqqc9abWtXC/cRCx8wzqMwrEnBMls/0N6HTuUNSzweTR77Izt7y/i7dccLgg==}
-
-  loro-wasm@1.0.7:
-    resolution: {integrity: sha512-WFIpGGzc6I7zRMDoRGxa3AHhno7gVnOgwqcrTfmpKWOtktZQ7BvhIV4kYgsdyuIBcMSrQEJTfOY/80xQSjUKTw==}
+  loro-crdt@1.0.8-alpha.3:
+    resolution: {integrity: sha512-89pCAN0kfcSWez0c9qs/eD84ZZ9qOnucLDrCyalj5jgdnJjRGcUB9tmqKwpcJILkQGyFggunuS3yEytub/Fegg==}
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
@@ -3761,13 +3752,7 @@ snapshots:
     dependencies:
       js-tokens: 4.0.0
 
-  loro-crdt@1.0.7:
-    dependencies:
-      loro-wasm: 1.0.7
-
-  loro-wasm@0.16.3: {}
-
-  loro-wasm@1.0.7: {}
+  loro-crdt@1.0.8-alpha.3: {}
 
   lru-cache@5.1.1:
     dependencies:
